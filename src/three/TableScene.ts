@@ -17,6 +17,26 @@ export const WAR_ROW_DIR: Record<PlayerId, number> = { A: -1, B: 1 };
 
 const MAX_PILE_VISUAL = 16;
 
+// The scene is composed for a landscape-ish view, with the piles placed at a
+// fixed horizontal offset from center. A PerspectiveCamera's `fov` is its
+// *vertical* field of view, so left unadjusted, the horizontal extent visible
+// grows or shrinks with the aspect ratio: on a narrow (portrait) screen the
+// piles get cropped out entirely, and on a very wide-but-short screen
+// (landscape phone) they drift inward as a fraction of screen width, into
+// the path of the centered UI panel. Solving for the vertical FOV that keeps
+// the *horizontal* extent constant at the reference aspect fixes both —
+// piles land at the same screen fraction at every aspect ratio.
+const BASE_FOV = 42;
+const REFERENCE_ASPECT = 1280 / 800;
+const MIN_FOV = 15;
+const MAX_FOV = 100;
+
+function fovForAspect(aspect: number): number {
+  const baseFovRad = THREE.MathUtils.degToRad(BASE_FOV);
+  const newFovRad = 2 * Math.atan(Math.tan(baseFovRad / 2) * (REFERENCE_ASPECT / aspect));
+  return THREE.MathUtils.clamp(THREE.MathUtils.radToDeg(newFovRad), MIN_FOV, MAX_FOV);
+}
+
 function jitter(seed: number): { x: number; z: number; ry: number } {
   const a = Math.sin(seed * 12.9898) * 43758.5453;
   const b = Math.sin(seed * 78.233) * 12345.678;
@@ -46,7 +66,8 @@ export class TableScene {
     this.scene.background = new THREE.Color(0x0d1420);
     this.scene.fog = new THREE.Fog(0x0d1420, 10, 22);
 
-    this.camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
+    const initialAspect = container.clientWidth / container.clientHeight;
+    this.camera = new THREE.PerspectiveCamera(fovForAspect(initialAspect), initialAspect, 0.1, 100);
     this.camera.position.set(0, 6.4, 7.6);
     this.camera.lookAt(0, 0.3, -0.2);
 
@@ -63,6 +84,7 @@ export class TableScene {
     this.scene.add(this.pileGroups.A, this.pileGroups.B, this.battleGroup);
 
     window.addEventListener("resize", () => this.onResize());
+    window.addEventListener("orientationchange", () => this.onResize());
   }
 
   private setupLights() {
@@ -129,7 +151,9 @@ export class TableScene {
   private onResize(): void {
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
-    this.camera.aspect = w / h;
+    const aspect = w / h;
+    this.camera.aspect = aspect;
+    this.camera.fov = fovForAspect(aspect);
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
   }

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>War — 3D Card Battle</title>
     <link
       rel="icon"
@@ -30,18 +30,20 @@
         <div class="card-label">cards</div>
       </div>
 
-      <div id="log-panel">
-        <div id="log-list"></div>
-      </div>
+      <div id="bottom-dock">
+        <div id="log-panel">
+          <div id="log-list"></div>
+        </div>
 
-      <div id="controls">
-        <button id="btn-deal" class="btn btn-secondary">New Game</button>
-        <button id="btn-step" class="btn btn-primary">Play Round</button>
-        <button id="btn-auto" class="btn btn-primary">Auto Play</button>
-        <label id="speed-control">
-          Speed
-          <input type="range" id="speed-slider" min="0.5" max="3" step="0.25" value="1" />
-        </label>
+        <div id="controls">
+          <button id="btn-deal" class="btn btn-secondary">New Game</button>
+          <button id="btn-step" class="btn btn-primary">Play Round</button>
+          <button id="btn-auto" class="btn btn-primary">Auto Play</button>
+          <label id="speed-control">
+            Speed
+            <input type="range" id="speed-slider" min="0.5" max="3" step="0.25" value="1" />
+          </label>
+        </div>
       </div>
 
       <div id="winner-banner" class="hidden">
