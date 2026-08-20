@@ -10,10 +10,13 @@ export interface HorseColors {
 const HOOF_COLOR = 0x2a2521;
 const EYE_COLOR = 0x14100e;
 
-const SHOULDER_Y = 1.02;
-const UPPER_LEN = 0.5;
-const LOWER_LEN = 0.46;
+const UPPER_LEN = 0.55;
+const LOWER_LEN = 0.5;
 const HOOF_LEN = 0.06;
+/** Derived so the hooves always land exactly on the ground plane. */
+const SHOULDER_Y = UPPER_LEN + LOWER_LEN + HOOF_LEN;
+/** Shared by the rest pose and the ride cycle so the rider can't jump on start. */
+const JOCKEY_SEAT_Y = SHOULDER_Y + 0.46;
 
 /** Metres of ground covered per stride, used to lock leg cadence to speed. */
 const STRIDE_LENGTH = 6.8;
@@ -100,13 +103,18 @@ export class HorseModel {
     this.root.add(this.body);
 
     // Barrel, chest and rump: low-poly spheres read as a rounded body when
-    // flat-shaded, and avoid the boxiness of a cuboid torso.
-    const barrel = ball(coatMat, 0.3, 0.36, 0.6);
-    barrel.position.set(0, SHOULDER_Y + 0.05, 0);
-    const chest = ball(coatMat, 0.285, 0.345, 0.3);
-    chest.position.set(0, SHOULDER_Y + 0.06, 0.48);
-    const rump = ball(coatMat, 0.315, 0.35, 0.34);
-    rump.position.set(0, SHOULDER_Y + 0.05, -0.55);
+    // flat-shaded, and avoid the boxiness of a cuboid torso. A thoroughbred
+    // is deep through the girth but narrow across it, so these stay slim in
+    // X and keep their depth in Y.
+    // The girth sits deep and low behind the shoulder, then the barrel and
+    // rump ride progressively higher — that rising belly line is a horse's
+    // tuck-up, and without it the torso reads as one round barrel.
+    const chest = ball(coatMat, 0.2, 0.325, 0.32);
+    chest.position.set(0, SHOULDER_Y + 0.03, 0.46);
+    const barrel = ball(coatMat, 0.2, 0.285, 0.64);
+    barrel.position.set(0, SHOULDER_Y + 0.08, -0.02);
+    const rump = ball(coatMat, 0.205, 0.288, 0.35);
+    rump.position.set(0, SHOULDER_Y + 0.075, -0.54);
     this.body.add(barrel, chest, rump);
 
     // Neck pivots at the chest and carries the head group at its top. Kept
@@ -114,37 +122,37 @@ export class HorseModel {
     this.neckBase = 0.95;
     this.neck.position.set(0, SHOULDER_Y + 0.24, 0.58);
     this.neck.rotation.x = this.neckBase;
-    const neckMesh = taperedCylinder(coatMat, 0.145, 0.235, 0.48);
-    neckMesh.position.y = 0.24;
+    const neckMesh = taperedCylinder(coatMat, 0.105, 0.175, 0.5);
+    neckMesh.position.y = 0.25;
     this.neck.add(neckMesh);
     this.body.add(this.neck);
 
-    this.head.position.y = 0.48;
+    this.head.position.y = 0.5;
     this.head.rotation.x = -this.neckBase + 0.3;
-    const skull = ball(coatMat, 0.125, 0.155, 0.225);
+    const skull = ball(coatMat, 0.098, 0.135, 0.215);
     skull.position.set(0, 0.04, 0.04);
-    const muzzle = ball(coatMat, 0.095, 0.105, 0.155);
-    muzzle.position.set(0, -0.025, 0.26);
-    const blaze = ball(mat(0xf2ece0, 0.9), 0.05, 0.055, 0.14);
-    blaze.position.set(0, 0.055, 0.18);
+    const muzzle = ball(coatMat, 0.072, 0.088, 0.15);
+    muzzle.position.set(0, -0.025, 0.25);
+    const blaze = ball(mat(0xf2ece0, 0.9), 0.04, 0.048, 0.135);
+    blaze.position.set(0, 0.05, 0.175);
     this.head.add(skull, muzzle, blaze);
 
     for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.13, 6), coatMat);
-      ear.position.set(side * 0.072, 0.185, -0.02);
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.038, 0.125, 6), coatMat);
+      ear.position.set(side * 0.058, 0.165, -0.02);
       ear.rotation.x = -0.15;
       ear.castShadow = true;
       this.head.add(ear);
 
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), mat(EYE_COLOR, 0.3));
-      eye.position.set(side * 0.108, 0.07, 0.12);
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat(EYE_COLOR, 0.3));
+      eye.position.set(side * 0.085, 0.065, 0.115);
       this.head.add(eye);
     }
 
     // Forelock + mane: flattened wedges swept back so they lie along the
     // crest rather than standing up like a dinosaur's spines.
-    const forelock = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.16, 5), maneMat);
-    forelock.position.set(0, 0.17, 0.05);
+    const forelock = new THREE.Mesh(new THREE.ConeGeometry(0.058, 0.15, 5), maneMat);
+    forelock.position.set(0, 0.155, 0.05);
     forelock.rotation.x = 0.6;
     forelock.scale.x = 0.6;
     this.head.add(forelock);
@@ -152,10 +160,10 @@ export class HorseModel {
 
     for (let i = 0; i < 6; i++) {
       const t = i / 5;
-      const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.078 - t * 0.016, 0.23, 5), maneMat);
-      tuft.position.set(0, 0.06 + t * 0.38, -0.115 + t * 0.02);
+      const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.062 - t * 0.013, 0.22, 5), maneMat);
+      tuft.position.set(0, 0.06 + t * 0.4, -0.088 + t * 0.018);
       tuft.rotation.x = -1.9;
-      tuft.scale.x = 0.9;
+      tuft.scale.x = 0.72;
       tuft.castShadow = true;
       this.neck.add(tuft);
     }
@@ -168,7 +176,7 @@ export class HorseModel {
       seg.position.copy(tailOrigin);
       // Slightly longer than the joint spacing so segments overlap rather
       // than reading as a chain of separate sticks.
-      const mesh = taperedCylinder(maneMat, 0.055 - i * 0.011, 0.1 - i * 0.011, 0.22);
+      const mesh = taperedCylinder(maneMat, 0.045 - i * 0.009, 0.078 - i * 0.009, 0.22);
       mesh.position.y = -0.09;
       seg.add(mesh);
       tailParent.add(seg);
@@ -179,10 +187,10 @@ export class HorseModel {
 
     // Legs. Front and hind differ in bulk and in which way the joint folds.
     const legPositions: { x: number; z: number; front: boolean; phase: number }[] = [
-      { x: -0.19, z: 0.45, front: true, phase: 0.48 },
-      { x: 0.19, z: 0.45, front: true, phase: 0.6 },
-      { x: -0.2, z: -0.5, front: false, phase: 0.0 },
-      { x: 0.2, z: -0.5, front: false, phase: 0.12 },
+      { x: -0.145, z: 0.45, front: true, phase: 0.48 },
+      { x: 0.145, z: 0.45, front: true, phase: 0.6 },
+      { x: -0.155, z: -0.5, front: false, phase: 0.0 },
+      { x: 0.155, z: -0.5, front: false, phase: 0.12 },
     ];
 
     for (const spec of legPositions) {
@@ -191,8 +199,8 @@ export class HorseModel {
 
       const upperMesh = taperedCylinder(
         coatMat,
-        spec.front ? 0.085 : 0.1,
-        spec.front ? 0.125 : 0.175,
+        spec.front ? 0.062 : 0.072,
+        spec.front ? 0.098 : 0.14,
         UPPER_LEN
       );
       upperMesh.position.y = -UPPER_LEN / 2;
@@ -200,11 +208,11 @@ export class HorseModel {
 
       const lower = new THREE.Group();
       lower.position.y = -UPPER_LEN;
-      const lowerMesh = taperedCylinder(coatMat, 0.05, 0.078, LOWER_LEN);
+      const lowerMesh = taperedCylinder(coatMat, 0.034, 0.055, LOWER_LEN);
       lowerMesh.position.y = -LOWER_LEN / 2;
       lower.add(lowerMesh);
 
-      const hoof = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.055, HOOF_LEN, 7), hoofMat);
+      const hoof = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.042, HOOF_LEN, 7), hoofMat);
       hoof.position.y = -LOWER_LEN - HOOF_LEN / 2;
       hoof.castShadow = true;
       lower.add(hoof);
@@ -221,16 +229,16 @@ export class HorseModel {
       side: THREE.DoubleSide,
     });
     for (const side of [-1, 1]) {
-      const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.28), clothMat);
+      const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.32, 0.26), clothMat);
       // Sits behind the rider's leg so the number stays readable.
-      cloth.position.set(side * 0.3, SHOULDER_Y + 0.02, -0.12);
+      cloth.position.set(side * 0.215, SHOULDER_Y + 0.02, -0.12);
       cloth.rotation.y = side * Math.PI * 0.5;
       this.body.add(cloth);
     }
 
     // Jockey, crouched forward over the withers. Seated high enough that the
     // legs straddle the barrel instead of disappearing inside it.
-    this.jockey.position.set(0, SHOULDER_Y + 0.46, 0.08);
+    this.jockey.position.set(0, JOCKEY_SEAT_Y, 0.08);
     this.jockeyTorso.rotation.x = 0.88;
     // Seat and back as two masses, so the rider has a waist rather than
     // fusing with the arms into one undifferentiated cone.
@@ -272,15 +280,15 @@ export class HorseModel {
 
       // Thigh angles down and forward to a high knee. Kept slim — a thick
       // pale cylinder here reads as a plank strapped to the horse.
-      const thigh = taperedCylinder(breechesMat, 0.042, 0.055, 0.22);
-      thigh.position.set(side * 0.28, -0.075, 0.1);
+      const thigh = taperedCylinder(breechesMat, 0.04, 0.052, 0.22);
+      thigh.position.set(side * 0.205, -0.075, 0.1);
       thigh.rotation.x = 2.03;
       this.jockey.add(thigh);
 
       // Shin folds back down from the knee into a short stirrup. This is the
       // part that actually reads as a leg from trackside, so it carries.
-      const boot = taperedCylinder(bootMat, 0.055, 0.062, 0.26);
-      boot.position.set(side * 0.295, -0.27, 0.14);
+      const boot = taperedCylinder(bootMat, 0.05, 0.057, 0.26);
+      boot.position.set(side * 0.22, -0.27, 0.14);
       boot.rotation.x = 0.5;
       this.jockey.add(boot);
     }
@@ -339,7 +347,7 @@ export class HorseModel {
 
     // Jockey rides the motion out of phase with the horse, knees absorbing it.
     this.jockeyTorso.rotation.x = 0.8 + 0.09 * Math.sin(theta + 3.0) * effort;
-    this.jockey.position.y = SHOULDER_Y + 0.4 + 0.035 * Math.sin(theta + 2.4) * effort;
+    this.jockey.position.y = JOCKEY_SEAT_Y + 0.035 * Math.sin(theta + 2.4) * effort;
 
     // Lean into the turns.
     this.root.rotation.z = THREE.MathUtils.lerp(this.root.rotation.z, banking, 1 - Math.exp(-dt * 4));
