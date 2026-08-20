@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>War — 3D Card Battle</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2216%22 fill=%22%237a1f2b%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%23f2d98d%22 font-family=%22Georgia,serif%22>♠</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="scene-container"></div>
+
+      <header id="hud-top">
+        <h1>WAR</h1>
+        <div class="round-counter">Round <span id="round-number">0</span></div>
+      </header>
+
+      <div class="player-panel player-a">
+        <div class="player-name">Player A</div>
+        <div class="card-count" id="count-a">26</div>
+        <div class="card-label">cards</div>
+      </div>
+
+      <div class="player-panel player-b">
+        <div class="player-name">Player B</div>
+        <div class="card-count" id="count-b">26</div>
+        <div class="card-label">cards</div>
+      </div>
+
+      <div id="log-panel">
+        <div id="log-list"></div>
+      </div>
+
+      <div id="controls">
+        <button id="btn-deal" class="btn btn-secondary">New Game</button>
+        <button id="btn-step" class="btn btn-primary">Play Round</button>
+        <button id="btn-auto" class="btn btn-primary">Auto Play</button>
+        <label id="speed-control">
+          Speed
+          <input type="range" id="speed-slider" min="0.5" max="3" step="0.25" value="1" />
+        </label>
+      </div>
+
+      <div id="winner-banner" class="hidden">
+        <div id="winner-text"></div>
+        <button id="btn-play-again" class="btn btn-primary">Play Again</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

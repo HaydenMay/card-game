@@ -1,0 +1,225 @@
+:root {
+  color-scheme: dark;
+  --gold: #d9b25c;
+  --red: #c0392b;
+  --panel-bg: rgba(10, 16, 26, 0.72);
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0d1420;
+  color: #eef1f6;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#scene-container {
+  position: absolute;
+  inset: 0;
+}
+
+#scene-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0 0;
+  pointer-events: none;
+}
+
+#hud-top h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 0.4rem;
+  color: var(--gold);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.round-counter {
+  font-size: 0.95rem;
+  color: #b9c2d0;
+  background: var(--panel-bg);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 178, 92, 0.3);
+}
+
+.player-panel {
+  position: absolute;
+  top: 1.1rem;
+  padding: 0.5rem 1rem;
+  background: var(--panel-bg);
+  border-radius: 12px;
+  border: 1px solid rgba(217, 178, 92, 0.25);
+  text-align: center;
+  backdrop-filter: blur(6px);
+  min-width: 90px;
+}
+
+.player-a {
+  left: 1.25rem;
+}
+
+.player-b {
+  right: 1.25rem;
+}
+
+.player-name {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  color: #9fb0c9;
+}
+
+.card-count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+}
+
+.card-label {
+  font-size: 0.7rem;
+  color: #7c8aa0;
+}
+
+#log-panel {
+  position: absolute;
+  bottom: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 90vw);
+  height: 92px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(217, 178, 92, 0.25);
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
+  overflow-y: auto;
+  backdrop-filter: blur(6px);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+#log-list div {
+  padding: 0.12rem 0;
+  color: #cdd6e4;
+}
+
+#log-list div:last-child {
+  color: #fff;
+  font-weight: 600;
+}
+
+#controls {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #e8c374, var(--gold));
+  color: #241a06;
+}
+
+.btn-primary.active {
+  background: linear-gradient(180deg, #ff8a5b, #c0392b);
+  color: #fff;
+}
+
+.btn-primary:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #eef1f6;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.btn-secondary:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+#speed-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #b9c2d0;
+  background: var(--panel-bg);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 178, 92, 0.2);
+}
+
+#winner-banner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  background: rgba(5, 8, 14, 0.72);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease;
+}
+
+#winner-banner.hidden {
+  display: none;
+}
+
+#winner-text {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.05rem;
+}
