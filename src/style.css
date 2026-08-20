@@ -72,6 +72,25 @@ body {
   white-space: nowrap;
 }
 
+#nav-link {
+  pointer-events: auto;
+  /* Stays clickable over the full-screen winner banner. */
+  position: relative;
+  z-index: 20;
+  font-size: clamp(0.65rem, 2.2vw, 0.78rem);
+  color: #b9c2d0;
+  text-decoration: none;
+  background: var(--panel-bg);
+  border: 1px solid rgba(217, 178, 92, 0.3);
+  border-radius: 999px;
+  padding: 0.22rem 0.7rem;
+  white-space: nowrap;
+}
+
+#nav-link:hover {
+  color: var(--gold);
+}
+
 .player-panel {
   position: absolute;
   top: clamp(0.5rem, 2vw, 1.1rem);

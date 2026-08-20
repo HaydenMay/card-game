@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Silks — 3D Horse Race</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2216%22 fill=%22%232f6b3f%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22>🐎</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="scene-container"></div>
+
+      <header id="hud-top">
+        <div class="race-title">SILKS</div>
+        <div id="race-status" class="race-status">Paddock</div>
+      </header>
+
+      <a id="nav-link" href="./index.html">♠ War</a>
+
+      <div id="leaderboard" class="hidden">
+        <div class="panel-heading">Running order</div>
+        <ol id="leaderboard-list"></ol>
+      </div>
+
+      <div id="race-clock" class="hidden">0.00s</div>
+
+      <div id="camera-controls" class="hidden">
+        <button class="cam-btn active" data-cam="broadcast">Broadcast</button>
+        <button class="cam-btn" data-cam="chase">Chase</button>
+        <button class="cam-btn" data-cam="aerial">Aerial</button>
+        <button class="cam-btn" data-cam="wire">Head-on</button>
+      </div>
+
+      <div id="speed-controls" class="hidden">
+        <button class="speed-btn" data-speed="1">1×</button>
+        <button class="speed-btn active" data-speed="1.5">1.5×</button>
+        <button class="speed-btn" data-speed="2">2×</button>
+        <button class="speed-btn" data-speed="3">3×</button>
+      </div>
+
+      <div id="countdown" class="hidden"></div>
+
+      <!-- Paddock: pick a runner before the off -->
+      <div id="paddock">
+        <div class="paddock-inner">
+          <h1>Today's Field</h1>
+          <p class="paddock-sub">
+            Pick a runner, then watch the race. Every horse and its gallop is generated in code.
+          </p>
+          <div id="field-list"></div>
+          <div class="paddock-footer">
+            <div class="bankroll">Bankroll <strong id="bankroll">100</strong> · Stake 10</div>
+            <button id="btn-start" class="btn btn-primary" disabled>Pick a runner</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="hidden">
+        <div class="results-inner">
+          <h2 id="results-heading">Result</h2>
+          <div id="photo-finish" class="photo-finish hidden">Photo finish!</div>
+          <ol id="results-list"></ol>
+          <div id="payout" class="payout"></div>
+          <button id="btn-again" class="btn btn-primary">Next Race</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/race/main.ts"></script>
+  </body>
+</html>
